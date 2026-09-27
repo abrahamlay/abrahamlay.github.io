@@ -1,7 +1,9 @@
 "use client";
 
 import { ArrowUpRight, Link as LinkIcon, Mail, MapPin } from "lucide-react";
-import { motion, useReducedMotion } from "framer-motion";
+import { motion, useReducedMotion, useScroll, useSpring, useTransform } from "framer-motion";
+import { AmbientBackground } from "@/components/ambient-background";
+import { ScrollProgress } from "@/components/scroll-progress";
 
 const experience = [
   {
@@ -64,8 +66,17 @@ function Reveal({ children, delay = 0, className = "" }: { children: React.React
 }
 
 export default function Home() {
+  const reduce = useReducedMotion();
+  const { scrollYProgress } = useScroll();
+  const parallax = useSpring(useTransform(scrollYProgress, [0, 1], [0, reduce ? 0 : -60]), {
+    stiffness: 60,
+    damping: 20,
+  });
+
   return (
     <main>
+      <ScrollProgress />
+      <AmbientBackground />
       <nav className="site-nav" aria-label="Main navigation">
         <a className="brand" href="#top">AL<span>.</span></a>
         <div className="nav-links">
@@ -77,6 +88,7 @@ export default function Home() {
 
       <div className="page-shell" id="top">
         <section className="hero">
+          <motion.div style={reduce ? undefined : { y: parallax }}>
           <Reveal>
             <p className="eyebrow">Senior Android Engineer <span>/</span> Indonesia</p>
             <h1>Building mobile products <em>people depend on.</em></h1>
@@ -90,6 +102,7 @@ export default function Home() {
             <div className="availability"><span className="status-dot" /> Open to meaningful engineering opportunities</div>
             <p className="hero-note">Currently based in Jakarta<br />Open to remote & international teams</p>
           </Reveal>
+          </motion.div>
         </section>
 
         <section className="intro section-rule">
